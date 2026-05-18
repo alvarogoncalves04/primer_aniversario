@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#ff4b4b"      # rojo intenso
+backgroundColor = "#FFF5F5"   # fondo rosado muy claro
+secondaryBackgroundColor = "#FFE4E4"
+textColor = "#2C1A1A"
+font = "sans serif"
