@@ -6,24 +6,30 @@ from datetime import date
 st.title("📊 Nuestro primer año en datos")
 st.markdown("*Elige tu lente favorito: estadísticas o biología*")
 
-# Inicializar modo en session state
-if "modo" not in st.session_state:
-    st.session_state.modo = "Estadístico"
+# Inicializar modo seleccionado (ninguno al inicio)
+if "modo_seleccionado" not in st.session_state:
+    st.session_state.modo_seleccionado = None
 
+# Botones para elegir modo
 col1, col2 = st.columns(2)
 with col1:
     if st.button("📈 Modo Estadístico (mi estilo)", use_container_width=True):
-        st.session_state.modo = "Estadístico"
+        st.session_state.modo_seleccionado = "Estadístico"
         st.rerun()
 with col2:
     if st.button("🔬 Modo Biólogo (tu estilo)", use_container_width=True):
-        st.session_state.modo = "Biólogo"
+        st.session_state.modo_seleccionado = "Biólogo"
         st.rerun()
 
 st.divider()
 
+# Si no se ha seleccionado ningún modo, mostrar mensaje y detener
+if st.session_state.modo_seleccionado is None:
+    st.info("👆 Haz clic en uno de los botones de arriba para ver los datos de nuestro año.")
+    st.stop()  # Detiene la ejecución aquí, no muestra nada más
+
 # ================= MODO ESTADÍSTICO =================
-if st.session_state.modo == "Estadístico":
+if st.session_state.modo_seleccionado == "Estadístico":
     st.subheader("📊 Datos y tendencias de nuestro año")
     
     # Gráfica 1: Competencia de snacks favoritos
@@ -57,7 +63,7 @@ if st.session_state.modo == "Estadístico":
     st.success("🎉 Dato freak: Nos hemos mandado aproximadamente 1,234 mensajes de 'te quiero' (contados mentalmente).")
 
 # ================= MODO BIÓLOGO =================
-else:
+else:  # Biólogo
     st.subheader("🧬 Nuestra relación bajo el microscopio")
     st.markdown("*Análisis biológico del amor (con mucho cariño)*")
 
@@ -81,7 +87,7 @@ else:
                       color="Hormona", text_auto=True)
     st.plotly_chart(fig_bio2, use_container_width=True)
 
-    # Evolución de sentimientos (línea de tiempo biológica)
+    # Evolución de sentimientos
     meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun"]
     felicidad = [70, 85, 90, 88, 95, 98]
     df_evo = pd.DataFrame({"Mes": meses, "Índice de felicidad (unidades biológicas)": felicidad})
@@ -90,14 +96,15 @@ else:
                        markers=True)
     st.plotly_chart(fig_bio3, use_container_width=True)
 
-    # Especie emblemática
+    # Especie emblemática (con emojis)
     st.subheader("🐧 Nuestra especie emblemática")
     st.markdown("""
     **Los pingüinos de Magallanes** se emparejan de por vida y realizan largas migraciones juntos.
     Nosotros, aunque no volamos, hemos recorrido kilómetros de risas y helados. 🍦
     """)
-    st.markdown("<h1 style='text-align: center; font-size: 80px;'>🐧💖🐧</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; font-size: 60px;'>🐧💖🐧</h1>", unsafe_allow_html=True)
     st.caption("Pingüinos enamorados (como nosotros)")
+
     # Dato curioso biológico
     st.info("💡 **Dato bio-romántico:** Los caballitos de mar son monógamos y se dan la cola todos los días. Nosotros nos damos la mano (y a veces un beso). ¡Misma energía!")
     
