@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#ff4b4b"      # rojo intenso
-backgroundColor = "#FFF5F5"   # fondo rosado muy claro
-secondaryBackgroundColor = "#FFE4E4"
-textColor = "#2C1A1A"
+primaryColor = "#B54A4A"          # Rojo vino un poco más brillante
+backgroundColor = "#1E1A1A"       # Fondo casi negro, muy oscuro (contraste máximo)
+secondaryBackgroundColor = "#2C2626" # Fondo de bloques ligeramente más claro
+textColor = "#FFFFFF"             # Texto blanco puro, legible al 100%
 font = "sans serif"
