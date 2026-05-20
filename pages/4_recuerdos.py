@@ -1,107 +1,258 @@
 import streamlit as st
 import random
-import pandas as pd
-from datetime import date
+from datetime import date, datetime
 import matplotlib.pyplot as plt
 from io import BytesIO
+import base64
 
 st.set_page_config(page_title="Rincón de Recuerdos", page_icon="🎉")
-st.title("🎉 Nuestro rincón mágico del primer año")
-st.markdown("*Mapa, línea de tiempo, planes locos, muro Polaroid y horóscopo... ¡y más!*")
 
-# ==================== 1. MAPA DE AVENTURAS ====================
-st.subheader("🗺️ Mapa de nuestras aventuras")
-st.markdown("Lugares que marcaron nuestro año (con anécdotas)")
+# CSS personalizado para mejorar la estética
+st.markdown("""
+<style>
+    .romantic-card {
+        background-color: #2C2626;
+        border-radius: 20px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        border-left: 5px solid #B54A4A;
+    }
+    .timeline-item {
+        background-color: #3A2C2C;
+        border-radius: 15px;
+        padding: 0.8rem;
+        margin: 0.5rem 0;
+        transition: transform 0.2s;
+    }
+    .timeline-item:hover {
+        transform: scale(1.02);
+        background-color: #4A3A3A;
+    }
+    .polaroid {
+        background-color: #FDF8F0;
+        padding: 0.8rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align: center;
+        color: #3E2A2A;
+    }
+    .button-glow {
+        transition: all 0.3s;
+    }
+    .button-glow:hover {
+        box-shadow: 0 0 12px #B54A4A;
+    }
+    .stButton button {
+        width: 100%;
+    }
+    .stProgress > div > div {
+        background-color: #B54A4A !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🎉 Nuestro rincón mágico del primer año")
+st.markdown("*Cada recuerdo, un tesoro. Explora, juega y planea nuestro futuro juntos.*")
+
+# ==================== 0. CUENTA REGRESIVA PARA EL PRÓXIMO ANIVERSARIO ====================
+proximo_aniversario = date(2027, 2, 14)  # 14 feb 2027 (próximo)
+hoy = date.today()
+dias_restantes = (proximo_aniversario - hoy).days
+if dias_restantes > 0:
+    st.metric("⏳ Días para nuestro segundo aniversario", dias_restantes, delta=None)
+    st.progress(1 - dias_restantes/365, text="Año en curso")
+else:
+    st.success("¡Hoy es nuestro aniversario! 🎂")
+
+st.divider()
+
+# ==================== 1. MAPA DE AVENTURAS (TARJETAS INTERACTIVAS) ====================
+st.subheader("🗺️ Lugares que atesoramos")
+st.markdown("*Cada lugar guarda una historia. Haz clic en cada tarjeta para leerla.*")
 
 lugares = {
-    "Migas Caracas": {"lat": 10.4961, "lon": -66.8980, "historia": "Aquí comenzó todo con unas hamburguesas crispy inolvidables. 🍔"},
-    "Parque del Este": {"lat": 10.4939, "lon": -66.8416, "historia": "Nuestro primer picnic y un atardecer mágico. 🌳"},
-    "Cine Plaza": {"lat": 10.5000, "lon": -66.9064, "historia": "Vimos una película de terror y te escondiste detrás de mí. 🎬"},
+    "🍔 Migas (Caracas)": {"historia": "Aquí comenzó todo con unas hamburguesas crispy. Esa primera cita fue mágica, llena de nervios y sonrisas. ¡Nunca olvidaré cómo te mordiste el labio mientras pedías!", "icono": "🍔"},
+    "🌳 Parque del Este": {"historia": "Nuestro primer picnic. Tú trajiste frutas y yo olvidé el abrelatas. Terminamos comprando helados y paseando hasta el atardecer. El sol pintó el cielo de naranja y nosotros de amor.", "icono": "🌳"},
+    "🎬 Cine Plaza": {"historia": "Vimos una película de terror y te escondiste detrás de mí. Luego me confesaste que no te gustaba el terror, pero querías sentir mi brazo alrededor de ti. Tramposa.", "icono": "🎬"},
+    "🏠 Nuestra casa": {"historia": "Nuestro refugio, donde cocinamos mal pero reímos bien, donde vimos series hasta las 3 am y donde cada rincón guarda un abrazo.", "icono": "🏠"}
 }
 
-df_map = pd.DataFrame([{"lat": v["lat"], "lon": v["lon"], "nombre": k} for k, v in lugares.items()])
-st.map(df_map)
+cols_map = st.columns(2)
+for i, (lugar, info) in enumerate(lugares.items()):
+    with cols_map[i % 2]:
+        with st.expander(f"{info['icono']} {lugar}"):
+            st.write(info["historia"])
+            st.caption("📅 2025-2026")
+            if st.button(f"Recordar {lugar.split()[0]}", key=f"btn_{i}"):
+                st.balloons()
+                st.success(f"✨ ¡Ese día fue increíble! Gracias por ese recuerdo.")
 
-for nombre, info in lugares.items():
-    with st.expander(f"📍 {nombre}"):
-        st.write(info["historia"])
-        st.caption("(Coordenadas aproximadas)")
+st.divider()
 
-# ==================== 2. LÍNEA DE TIEMPO ====================
+# ==================== 2. LÍNEA DE TIEMPO (con efecto hover) ====================
 st.subheader("📅 Línea de tiempo de nuestros momentos épicos")
+st.markdown("*Desliza el mouse sobre cada evento para ver el detalle.*")
+
 timeline = [
-    ("14 Feb 2025", "⭐ Nos conocimos en Migas", "Hamburguesas, risas y electricidad en el aire."),
-    ("20 Mar 2025", "📸 Primera foto juntos", "Selfie en el Parque del Este con un atardecer de fondo."),
-    ("10 Jun 2025", "🍦 Primera pelea graciosa", "Discutimos quién se comió el último helado (fuiste tú)."),
+    ("14 Feb 2025", "⭐ Nos conocimos en Migas", "Hamburguesas, risas y electricidad en el aire. Pediste sin cebolla, yo sin tomate. ¡Combinación perfecta!"),
+    ("20 Mar 2025", "📸 Primera foto juntos", "Selfie en el Parque del Este con un atardecer de fondo. Esa foto sigue siendo mi favorita."),
+    ("10 Jun 2025", "🍦 Primera pelea graciosa", "Discutimos quién se comió el último helado (fuiste tú). Luego nos reímos y compramos otro."),
     ("14 Ago 2025", "🎂 Mi cumpleaños sorpresa", "Me llevaste a comer hamburguesas otra vez. ¡Eres perfecta!"),
-    ("14 Feb 2026", "💖 Primer aniversario", "Hoy celebramos este año increíble. ¡Te amo!"),
+    ("14 Feb 2026", "💖 Primer aniversario", "Hoy celebramos este año increíble. ¡Te amo más que nunca!")
 ]
+
 for fecha, titulo, desc in timeline:
     with st.container():
-        st.markdown(f"**{fecha}** – *{titulo}*")
-        st.write(desc)
-        st.divider()
+        st.markdown(f"""
+        <div class="timeline-item">
+            <strong>{fecha}</strong> – <em>{titulo}</em><br>
+            <span style="font-size:0.9rem;">{desc}</span>
+        </div>
+        """, unsafe_allow_html=True)
+st.divider()
 
-# ==================== 3. RINCÓN DE PLANES LOCOS (con descarga en imagen) ====================
+# ==================== 3. MEDIDOR DE CHISPITAS DE AMOR (INTERACTIVO) ====================
+st.subheader("✨ Medidor de chispitas de amor")
+st.markdown("*Cada vez que das like, sumamos una chispa. ¿Llegaremos al fuego eterno?*")
+
+if "chispas" not in st.session_state:
+    st.session_state.chispas = random.randint(20, 50)  # iniciar con un valor sorpresa
+
+col1, col2 = st.columns([1, 2])
+with col1:
+    if st.button("❤️ ¡Dar like! (chispa extra)", use_container_width=True):
+        st.session_state.chispas += 1
+        st.balloons()
+        st.success("¡Chispa añadida! 💥")
+with col2:
+    st.metric("Chispitas acumuladas", st.session_state.chispas)
+
+# Barra de progreso según chispas
+nivel_chispas = min(100, st.session_state.chispas * 2)
+st.progress(nivel_chispas / 100, text=f"Intensidad del amor: {nivel_chispas}%")
+if nivel_chispas < 30:
+    st.info("💡 Necesitamos más like para calentar el ambiente.")
+elif nivel_chispas < 70:
+    st.success("🔥 ¡Ya hay buena temperatura! Sigue así.")
+else:
+    st.error("💖 ¡FUEGO TOTAL! Están que arden. El amor desborda.")
+
+st.divider()
+
+# ==================== 4. RINCÓN DE PLANES LOCOS (CON DESCARGA PNG) ====================
 st.subheader("📝 Rincón de planes locos")
-st.markdown("Escribe cosas que quieras hacer juntos en el futuro. ¡Las guardamos en tu sesión!")
+st.markdown("*Escribe cosas que quieras hacer juntos en el futuro. ¡Las guardamos en tu sesión!*")
 
 if "planes" not in st.session_state:
-    st.session_state.planes = ["Comer 100 helados juntos", "Bailar bajo la lluvia", "Visitar el Ávila de noche"]
+    st.session_state.planes = [
+        "🍦 Comer 100 helados juntos",
+        "💃 Bailar bajo la lluvia",
+        "🌋 Visitar el Ávila de noche",
+        "🍔 Probar todas las hamburguesas de Migas",
+        "✈️ Viajar a la playa"
+    ]
 
-nuevo_plan = st.text_input("Nuevo plan loco:")
-if st.button("Agregar plan"):
+nuevo_plan = st.text_input("✨ Nuevo plan loco:", placeholder="Ejemplo: Aprender a bailar salsa")
+if st.button("➕ Agregar plan", use_container_width=True):
     if nuevo_plan.strip():
         st.session_state.planes.append(nuevo_plan.strip())
         st.rerun()
 
-st.write("**Lista de pendientes chéveres:**")
+# Mostrar lista de planes con estilo
+st.write("**📌 Lista de pendientes chéveres:**")
 for i, plan in enumerate(st.session_state.planes):
-    st.write(f"{i+1}. {plan}")
+    col_check, col_text = st.columns([0.1, 0.9])
+    with col_check:
+        st.checkbox("", key=f"check_{i}")
+    with col_text:
+        st.write(f"{i+1}. {plan}")
 
-# Función para generar imagen PNG de la lista de planes
+# Función para generar imagen PNG de la lista de planes (mejorado)
 def generar_imagen_planes(lista_planes):
-    fig, ax = plt.subplots(figsize=(6, 0.5 * len(lista_planes) + 1))
+    fig, ax = plt.subplots(figsize=(8, 0.3 * len(lista_planes) + 2))
     ax.axis('off')
+    fig.patch.set_facecolor('#FDF8F0')
     texto = "\n".join([f"{i+1}. {p}" for i, p in enumerate(lista_planes)])
-    ax.text(0.1, 0.9, texto, transform=ax.transAxes, fontsize=12, verticalalignment='top', family='monospace')
-    ax.set_title("Nuestros planes locos futuros", fontsize=14, fontweight='bold')
+    ax.text(0.05, 0.95, texto, transform=ax.transAxes, fontsize=12,
+            verticalalignment='top', family='monospace', color='#3E2A2A')
+    ax.set_title("Nuestros planes locos futuros", fontsize=14, fontweight='bold', color='#B54A4A')
     buf = BytesIO()
     plt.savefig(buf, format='png', bbox_inches='tight')
     buf.seek(0)
     plt.close(fig)
     return buf
 
-if st.button("📸 Descargar lista de planes como imagen PNG"):
+if st.button("📸 Descargar lista de planes como imagen", use_container_width=True):
     img_buf = generar_imagen_planes(st.session_state.planes)
-    st.download_button("Haz clic aquí para guardar la imagen", img_buf, file_name="planes_locos.png", mime="image/png")
+    b64 = base64.b64encode(img_buf.getvalue()).decode()
+    href = f'<a href="data:image/png;base64,{b64}" download="planes_locos.png">Haz clic aquí para guardar la imagen</a>'
+    st.markdown(href, unsafe_allow_html=True)
 
-# ==================== 4. MURO DE RECUERDOS TIPO POLAROID ====================
+st.divider()
+
+# ==================== 5. MURO DE RECUERDOS TIPO POLAROID ====================
 st.subheader("🖼️ Muro de recuerdos (Polaroids)")
-st.markdown("*Aquí irán nuestras fotos. Por ahora, emojis y frases.*")
-cols = st.columns(3)
-recuerdos = [
-    ("🍔", "Primera cita en Migas", "Hamburguesas crispy y miradas"),
-    ("📷", "Selfie en el parque", "Ese atardecer naranja"),
-    ("🎬", "Noche de cine", "Te escondiste en mi hombro")
-]
-for i, (emoji, titulo, desc) in enumerate(recuerdos):
-    with cols[i % 3]:
-        st.markdown(f"📸 **{titulo}**")
-        st.write(f"{emoji} {desc}")
-        st.caption("(Pronto una foto real)")
+st.markdown("*Nuestros momentos favoritos en formato vintage. Pronto con fotos reales.*")
 
-# ==================== 5. HORÓSCOPO DE LA RELACIÓN ====================
-st.subheader("🔮 Horóscopo de la relación (versión chévere)")
-frases = [
-    "Hoy el universo conspira para que coman helado juntos. ¡Aprovecha!",
-    "Las estrellas predicen una tarde de abrazos y risas. No la dejes escapar.",
-    "Cuidado con los antojos compartidos: podrían terminar en una segunda cena.",
-    "Es un buen día para recordar por qué te elegí: ¡porque eres la mejor loca que conozco!",
-    "La luna está en cuarto creciente, ideal para hacer planes locos (como pedir hamburguesas a las 11 pm).",
-    "Venus alinea tu mirada con la mía. Prepárate para un 'te quiero' espontáneo."
+recuerdos = [
+    ("🍔", "Primera cita en Migas", "Hamburguesas crispy y miradas cómplices", "2025-02-14"),
+    ("📷", "Selfie en el parque", "Ese atardecer naranja", "2025-03-20"),
+    ("🎬", "Noche de cine", "Te escondiste en mi hombro", "2025-04-10"),
+    ("🍦", "Helados compartidos", "Competencia de sabores", "2025-06-15"),
+    ("🎂", "Mi cumpleaños sorpresa", "Tú y la vela mal puesta", "2025-08-14"),
+    ("💖", "Aniversario", "Brindis con refresco", "2026-02-14")
 ]
-if st.button("✨ Ver predicción del día"):
-    st.info(random.choice(frases))
+
+cols_polaroid = st.columns(3)
+for i, (emoji, titulo, desc, fecha) in enumerate(recuerdos):
+    with cols_polaroid[i % 3]:
+        st.markdown(f"""
+        <div class="polaroid">
+            <div style="font-size: 3rem;">{emoji}</div>
+            <strong>{titulo}</strong><br>
+            <span style="font-size:0.8rem;">{desc}</span><br>
+            <span style="font-size:0.7rem; color:#7A5A5A;">{fecha}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        st.caption("📸 (pronto foto real)")
+
+st.divider()
+
+# ==================== 6. HORÓSCOPO DE LA RELACIÓN (CON SORPRESA) ====================
+st.subheader("🔮 Horóscopo de la relación (versión chévere)")
+
+frases = [
+    "💫 Hoy el universo conspira para que coman helado juntos. ¡Aprovecha!",
+    "🌙 Las estrellas predicen una tarde de abrazos y risas. No la dejes escapar.",
+    "🍔 Cuidado con los antojos compartidos: podrían terminar en una segunda cena.",
+    "🎵 Es un buen día para recordar por qué te elegí: ¡porque eres la mejor loca que conozco!",
+    "🌌 La luna está en cuarto creciente, ideal para hacer planes locos (como pedir hamburguesas a las 11 pm).",
+    "💖 Venus alinea tu mirada con la mía. Prepárate para un 'te quiero' espontáneo."
+]
+
+if st.button("✨ Ver predicción del día", use_container_width=True):
+    prediccion = random.choice(frases)
+    st.info(prediccion)
+    if "te quiero" in prediccion.lower():
+        st.balloons()
+        st.success("¡Esa predicción ya se cumplió! ❤️")
 else:
     st.info("Presiona el botón para recibir tu horóscopo diario.")
+
+st.divider()
+
+# ==================== 7. BOTÓN SORPRESA FINAL ====================
+st.subheader("🎁 ¿Un último detalle?")
+if st.button("🕯️ Encender la llama eterna", use_container_width=True):
+    st.balloons()
+    st.snow()
+    st.markdown("""
+    <div style="background-color:#2C2626; padding:1rem; border-radius:15px; text-align:center;">
+        <h3 style="color:#B54A4A;">✨ Eres la luz de mi vida ✨</h3>
+        <p>Gracias por este año increíble. Te amo más allá de las estrellas.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("---")
+st.caption("*Hecho con todo el amor del mundo, utilizando estadísticas, biología y mucha programación. 💻💖*")
