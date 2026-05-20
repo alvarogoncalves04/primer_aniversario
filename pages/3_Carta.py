@@ -1,56 +1,129 @@
 import streamlit as st
-import random
 from datetime import datetime
 
 st.set_page_config(page_title="Carta de Aniversario", page_icon="💌")
-st.title("💌 Una carta especial para ti")
-st.markdown("*Elige palabras que describan nuestro año y generaré una carta única, ¡con sabor venezolano!*")
 
-st.subheader("📝 Paso 1: Cuéntame qué recuerdos destacar")
-palabras_usuario = st.text_area(
-    "Escribe palabras clave separadas por comas:",
-    placeholder="ejemplo: Migas, hamburguesas crispy, helados, tus risas, Caracas"
-)
+# Estilo CSS para simular papel de carta
+st.markdown("""
+<style>
+    .carta-container {
+        background-color: #FFF8F0;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        font-family: 'Georgia', serif;
+        color: #3E2A2A;
+        border: 1px solid #D4A5A5;
+        margin: 20px 0;
+    }
+    .carta-titulo {
+        font-size: 2rem;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #B54A4A;
+    }
+    .carta-fecha {
+        text-align: right;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        color: #7A5A5A;
+    }
+    .carta-contenido {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        text-align: justify;
+        white-space: pre-wrap;
+    }
+    .sobre {
+        text-align: center;
+        font-size: 5rem;
+        cursor: pointer;
+        padding: 2rem;
+        background-color: #2C2626;
+        border-radius: 20px;
+        transition: transform 0.3s;
+    }
+    .sobre:hover {
+        transform: scale(1.05);
+    }
+</style>
+""", unsafe_allow_html=True)
 
-st.subheader("🎭 Paso 2: Elige el tono")
-tono = st.selectbox("Tono de la carta:", ["Romántico", "Divertido", "Emotivo", "Aventurero"])
+st.title("💌 Una carta de corazón a corazón")
+st.markdown("*Hoy te escribo estas palabras, porque a veces el amor se cuenta mejor con tinta y papel.*")
 
-if st.button("✨ Generar carta mágica"):
-    if not palabras_usuario.strip():
-        st.warning("Escribe al menos una palabra clave, mi pana.")
-    else:
-        palabras = [p.strip() for p in palabras_usuario.split(",")]
-        palabra_destacada = random.choice(palabras)
-        
-        if tono == "Romántico":
-            inicio = "Mi vida,"
-            cuerpo = f"Cada vez que recuerdo {palabra_destacada}, siento un calorcito en el pecho. Ese momento, como tantos otros, me hace pensar que el destino nos tenía preparado algo bien chevere."
-            final = "Gracias por un año de amor, helados compartidos y promesas pa'l futuro. Te quiero un montón."
-        elif tono == "Divertido":
-            inicio = "¡Mi loca favorita!"
-            cuerpo = f"¿Te acuerdas de {palabra_destacada}? Me parto de la risa solo de pensarlo. Contigo hasta las anécdotas más simples se convierten en historias épicas, como cuando pedimos hamburguesas crispy en Migas y casi nos ahogamos de tanto reír."
-            final = "Que sigan los helados, las galletas y los abrazos improvisados. ¡Eres un sol, chama!"
-        elif tono == "Emotivo":
-            inicio = "Mi persona preferida en el mundo,"
-            cuerpo = f"{palabra_destacada} es solo una pincelada de todo lo bonito que hemos vivido. Este año he aprendido que la felicidad tiene tu nombre y tu risa."
-            final = "Gracias por ser mi refugio y mi mayor alegría. Eres la mejor persona que he conocido."
-        else:  # Aventurero
-            inicio = "¡Compañera de viaje!"
-            cuerpo = f"{palabra_destacada} fue el inicio de una ruta increíble. Un año lleno de descubrimientos, sabores (como las crispy de Migas), nuevos lugares y miles de fotos."
-            final = "Que nunca falten las ganas de seguir explorando juntos. ¡Te amo, mi pana de aventuras!"
+# Inicializar estado de la carta (abierta o cerrada)
+if "carta_abierta" not in st.session_state:
+    st.session_state.carta_abierta = False
 
-        carta_completa = f"""
-{inicio}
+# Mostrar sobre cerrado si no se ha abierto
+if not st.session_state.carta_abierta:
+    st.markdown("""
+    <div class="sobre">
+        📬
+        <p style="font-size: 1rem; margin-top: 0.5rem;">Haz clic en el botón para abrir tu carta</p>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("📨 Abrir carta mágica"):
+        st.session_state.carta_abierta = True
+        st.rerun()
+else:
+    # Carta desplegada
+    st.markdown("""
+    <div class="carta-container">
+        <div class="carta-titulo">Para mi amor en nuestro primer aniversario</div>
+        <div class="carta-fecha">Caracas, {fecha}</div>
+        <div class="carta-contenido">
+        {contenido}
+        </div>
+        <div style="margin-top: 2rem; text-align: right;">
+        Con todo mi corazón,<br>
+        Tu compañero
+        </div>
+    </div>
+    """.format(
+        fecha=datetime.now().strftime("%d de %B de %Y"),
+        contenido="""
+        Mi vida,
 
-{cuerpo}
+        Hoy, al mirar hacia atrás y ver todo lo que hemos caminado juntos, no puedo evitar sonreír como un niño. 
+        Un año parece mucho y nada a la vez. Mucho porque en estos 365 días hemos llenado cada rincón de recuerdos inolvidables: 
+        las hamburguesas crispy en Migas, las tardes de helado en el parque, las series que vimos abrazados hasta que el sueño nos venció.
+        Nada porque contigo el tiempo vuela, y siento que fue ayer cuando te vi por primera vez y supe que algo especial iba a pasar.
 
-{final}
+        Eres la persona que le dio color a mis estadísticas, la que convirtió mis gráficos de barras en latidos, 
+        la que me enseñó que la biología del amor se escribe con mayúsculas. 
+        Gracias por cada abrazo, cada risa, cada discusión tonta que terminó en un beso. 
+        Gracias por ser mi calma en el caos y mi aventura en la rutina.
 
-Con todo mi cariño,
-Tu compañero
+        Este es solo el primer capítulo de una historia que apenas empieza. 
+        Te prometo seguir llenando páginas de momentos felices, de viajes, de helados compartidos, 
+        de conversaciones hasta tarde y de silencios cómplices.
 
-📅 {datetime.now().strftime("%d de %B de %Y")}
-"""
-        st.success("🎉 ¡Aquí tienes tu carta venezolana!")
-        st.write(carta_completa)
-        st.download_button("📥 Descargar carta", carta_completa, file_name=f"carta_aniversario_{datetime.now().strftime('%Y%m%d')}.txt")
+        Feliz primer aniversario, mi chama loca. Te amo más de lo que las palabras pueden escribir.
+
+        Con cariño infinito,
+        Tu pana del alma 💖
+        """
+    ), unsafe_allow_html=True)
+    
+    st.download_button("📥 Descargar esta carta como archivo de texto", 
+                       data="Para mi amor en nuestro primer aniversario\n\n" +
+                            "Mi vida,\n\nHoy, al mirar atrás... (aquí va el texto completo)\n\nTe amo.",
+                       file_name=f"carta_aniversario_{datetime.now().strftime('%Y%m%d')}.txt",
+                       mime="text/plain")
+    
+    if st.button("💬 Quiero escribirle una carta de vuelta"):
+        st.markdown("### ✍️ Escribe tu respuesta")
+        respuesta = st.text_area("Tus palabras para él:", height=300)
+        if st.button("Guardar y descargar respuesta"):
+            if respuesta:
+                st.download_button("Descargar tu carta", respuesta, "mi_respuesta.txt")
+                st.success("¡Tu respuesta ha sido guardada! Se la entregarás en físico también, ¿verdad?")
+            else:
+                st.warning("Escribe algo antes de guardar.")
+    
+    if st.button("🔒 Cerrar carta (volver al sobre)"):
+        st.session_state.carta_abierta = False
+        st.rerun()
