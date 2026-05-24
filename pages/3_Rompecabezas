@@ -1,0 +1,260 @@
+import streamlit as st
+import random
+from PIL import Image
+
+st.set_page_config(page_title="Rompecabezas del Amor", page_icon="🧩")
+
+# CSS personalizado
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #1E1A1A;
+    }
+    .reglas-card {
+        background: linear-gradient(135deg, #2C2626, #3D2C2C);
+        border-radius: 20px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        border-left: 5px solid #B54A4A;
+    }
+    .completado-card {
+        background: linear-gradient(135deg, #2E5C2E, #1E3A1E);
+        border-radius: 20px;
+        padding: 1rem;
+        text-align: center;
+        margin: 1rem 0;
+        border: 2px solid #4CAF50;
+    }
+    .stButton button {
+        width: 100%;
+        background: linear-gradient(135deg, #B54A4A, #8B3A3A) !important;
+        border: none !important;
+    }
+    .stProgress > div > div {
+        background: linear-gradient(90deg, #B54A4A, #FF6B6B) !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Título
+st.title("🧩 Rompecabezas del Amor")
+st.markdown("*Arma nuestras fotos favoritas pieza por pieza. ¡Demuestra tu paciencia y amor!*")
+
+# ========== REGLAS DEL JUEGO ==========
+with st.expander("📖 Ver reglas del juego", expanded=True):
+    st.markdown("""
+    <div class="reglas-card">
+        <h3>🎯 ¿Cómo jugar?</h3>
+        <ul>
+            <li>🔹 Hay <strong>3 rompecabezas</strong> que debes completar en orden.</li>
+            <li>🔹 Cada rompecabezas tiene <strong>9 piezas</strong> (cuadrícula 3x3).</li>
+            <li>🔹 Las piezas aparecen <strong>desordenadas</strong>.</li>
+            <li>🔹 Debes hacer clic en la <strong>pieza que sigue en orden</strong> (1, luego 2, luego 3...).</li>
+            <li>🔹 La <strong>pieza 1</strong> es la esquina superior izquierda de la imagen original.</li>
+            <li>🔹 El orden es de <strong>izquierda a derecha, fila por fila</strong>.</li>
+            <li>🔹 Cuando completes un rompecabezas, el <strong>siguiente se desbloqueará automáticamente</strong>.</li>
+            <li>🔹 Al final, recibirás un <strong>mensaje sorpresa</strong>.</li>
+        </ul>
+        <p>💡 <strong>Pista:</strong> Antes de empezar, observa la imagen de referencia para saber cómo se ve la foto completa.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.divider()
+
+# ========== INICIALIZAR ESTADO DE LOS ROMPECABEZAS ==========
+if "nivel_actual" not in st.session_state:
+    st.session_state.nivel_actual = 1  # 1, 2 o 3
+    st.session_state.piezas_encontradas_nivel1 = 0
+    st.session_state.piezas_encontradas_nivel2 = 0
+    st.session_state.piezas_encontradas_nivel3 = 0
+    st.session_state.nivel1_completado = False
+    st.session_state.nivel2_completado = False
+    st.session_state.nivel3_completado = False
+    st.session_state.orden_piezas_nivel1 = list(range(9))
+    st.session_state.orden_piezas_nivel2 = list(range(9))
+    st.session_state.orden_piezas_nivel3 = list(range(9))
+    random.shuffle(st.session_state.orden_piezas_nivel1)
+    random.shuffle(st.session_state.orden_piezas_nivel2)
+    random.shuffle(st.session_state.orden_piezas_nivel3)
+    st.session_state.piezas_correctas_nivel1 = [False] * 9
+    st.session_state.piezas_correctas_nivel2 = [False] * 9
+    st.session_state.piezas_correctas_nivel3 = [False] * 9
+
+# Configuración de los rompecabezas
+rompecabezas = {
+    1: {
+        "nombre": "🌺 Flores Lindas",
+        "foto": "images/floreslindas.jpeg",
+        "descripcion": "Las flores más bonitas, como el amor que florece entre nosotros.",
+        "completado": st.session_state.nivel1_completado,
+        "piezas_encontradas": st.session_state.piezas_encontradas_nivel1,
+        "orden_piezas": st.session_state.orden_piezas_nivel1,
+        "piezas_correctas": st.session_state.piezas_correctas_nivel1,
+        "estado_completado": "nivel1_completado",
+        "estado_piezas": "piezas_encontradas_nivel1"
+    },
+    2: {
+        "nombre": "📸 Momento Estudio",
+        "foto": "images/momestafudiosa.jpeg",
+        "descripcion": "Ese momento especial que quedó guardado en nuestra memoria.",
+        "completado": st.session_state.nivel2_completado,
+        "piezas_encontradas": st.session_state.piezas_encontradas_nivel2,
+        "orden_piezas": st.session_state.orden_piezas_nivel2,
+        "piezas_correctas": st.session_state.piezas_correctas_nivel2,
+        "estado_completado": "nivel2_completado",
+        "estado_piezas": "piezas_encontradas_nivel2"
+    },
+    3: {
+        "nombre": "😊 Nuestra Mueca",
+        "foto": "images/mueca.jpeg",
+        "descripcion": "Esa mueca que solo tú sabes hacer y que me derrite el corazón.",
+        "completado": st.session_state.nivel3_completado,
+        "piezas_encontradas": st.session_state.piezas_encontradas_nivel3,
+        "orden_piezas": st.session_state.orden_piezas_nivel3,
+        "piezas_correctas": st.session_state.piezas_correctas_nivel3,
+        "estado_completado": "nivel3_completado",
+        "estado_piezas": "piezas_encontradas_nivel3"
+    }
+}
+
+# ========== MOSTRAR BARRA DE PROGRESO GLOBAL ==========
+total_piezas_completadas = (
+    st.session_state.piezas_encontradas_nivel1 + 
+    st.session_state.piezas_encontradas_nivel2 + 
+    st.session_state.piezas_encontradas_nivel3
+)
+total_piezas = 27
+st.progress(total_piezas_completadas / total_piezas, text=f"🎯 Progreso total: {total_piezas_completadas} de {total_piezas} piezas")
+
+st.divider()
+
+# ========== FUNCIÓN PARA MOSTRAR UN ROMPECABEZAS ==========
+def mostrar_rompecabezas(nivel, config):
+    st.subheader(f"🧩 {config['nombre']}")
+    
+    # Mostrar imagen de referencia (pequeña)
+    try:
+        img_ref = Image.open(config["foto"])
+        st.image(img_ref, caption="🌸 Esta es la imagen que debes armar", width=200)
+    except:
+        st.warning(f"⚠️ No se encontró la imagen: {config['foto']}")
+    
+    st.markdown(f"*{config['descripcion']}*")
+    st.caption("💡 Recuerda: Las piezas van en orden del 1 al 9, de izquierda a derecha, fila por fila.")
+    
+    st.markdown("---")
+    
+    if not config["completado"]:
+        pieza_actual = config["piezas_encontradas"] + 1
+        st.markdown(f"### 🔢 Busca la pieza número **{pieza_actual}**")
+        
+        # Mostrar las piezas en una cuadrícula 3x3
+        cols = st.columns(3)
+        for idx, pos in enumerate(config["orden_piezas"]):
+            if not config["piezas_correctas"][pos]:
+                with cols[idx % 3]:
+                    if pos + 1 == pieza_actual:
+                        if st.button(f"🧩 Pieza {pos + 1}", key=f"nivel{nivel}_pieza_{pos}", use_container_width=True):
+                            config["piezas_correctas"][pos] = True
+                            config["piezas_encontradas"] += 1
+                            # Actualizar session_state
+                            if nivel == 1:
+                                st.session_state.piezas_encontradas_nivel1 = config["piezas_encontradas"]
+                                st.session_state.piezas_correctas_nivel1 = config["piezas_correctas"]
+                            elif nivel == 2:
+                                st.session_state.piezas_encontradas_nivel2 = config["piezas_encontradas"]
+                                st.session_state.piezas_correctas_nivel2 = config["piezas_correctas"]
+                            else:
+                                st.session_state.piezas_encontradas_nivel3 = config["piezas_encontradas"]
+                                st.session_state.piezas_correctas_nivel3 = config["piezas_correctas"]
+                            st.rerun()
+                    else:
+                        st.button(f"🔒 Pieza {pos + 1}", key=f"block_{nivel}_{pos}", disabled=True, use_container_width=True)
+        
+        # Mostrar progreso del nivel
+        st.progress(config["piezas_encontradas"] / 9, text=f"Progreso: {config['piezas_encontradas']} de 9 piezas")
+        
+        # Verificar si completó este nivel
+        if config["piezas_encontradas"] == 9:
+            if nivel == 1:
+                st.session_state.nivel1_completado = True
+            elif nivel == 2:
+                st.session_state.nivel2_completado = True
+            else:
+                st.session_state.nivel3_completado = True
+            st.balloons()
+            st.success(f"🎉 ¡COMPLETASTE {config['nombre']}! 🎉")
+            if nivel < 3:
+                st.info(f"✨ ¡Nivel {nivel + 1} desbloqueado! Sigue hacia abajo. ✨")
+            st.rerun()
+    else:
+        # Nivel completado
+        st.markdown(f"""
+        <div class="completado-card">
+            <h3>✅ ¡{config['nombre']} COMPLETADO! ✅</h3>
+            <p>✨ Ya puedes continuar con el siguiente nivel ✨</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Mostrar la foto completa al completar
+        try:
+            img_completa = Image.open(config["foto"])
+            st.image(img_completa, caption=f"💖 {config['nombre']} - ¡LO LOGRASTE! 💖", use_container_width=True)
+        except:
+            pass
+
+    st.divider()
+
+# ========== MOSTRAR NIVELES SEGÚN EL DESBLOQUEO ==========
+
+# Nivel 1 (siempre visible)
+mostrar_rompecabezas(1, rompecabezas[1])
+
+# Nivel 2 (solo si nivel 1 está completado)
+if st.session_state.nivel1_completado:
+    mostrar_rompecabezas(2, rompecabezas[2])
+else:
+    st.info("🔒 **Nivel 2 bloqueado** - Completa el Nivel 1 para desbloquearlo.")
+
+# Nivel 3 (solo si nivel 2 está completado)
+if st.session_state.nivel2_completado:
+    mostrar_rompecabezas(3, rompecabezas[3])
+else:
+    if st.session_state.nivel1_completado:
+        st.info("🔒 **Nivel 3 bloqueado** - Completa el Nivel 2 para desbloquearlo.")
+
+# ========== MENSAJE SORPRESA AL COMPLETAR TODO ==========
+if st.session_state.nivel3_completado:
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #B54A4A, #8B3A3A); border-radius: 30px; padding: 2rem; text-align: center; margin: 2rem 0;">
+        <h1 style="color: #FFD700;">🎉✨ ¡FELICITACIONES! ✨🎉</h1>
+        <h2 style="color: #FFFFFF;">¡Completaste los 3 rompecabezas!</h2>
+        <p style="font-size: 1.2rem; color: #FFFFFF;">Así como armaste cada pieza, tú armaste mi corazón por completo.</p>
+        <p style="font-size: 1.1rem; color: #FFD700; margin-top: 1rem;">💖 Eres la pieza que me faltaba para ser feliz 💖</p>
+        <p style="font-size: 1rem; margin-top: 1rem;">Gracias por este año increíble. Te amo más allá de las estrellas.</p>
+        <p style="font-size: 1.5rem; margin-top: 1rem;">🧩💕</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if st.button("🔄 REINICIAR ROMPECABEZAS (jugar de nuevo)", use_container_width=True):
+        # Reiniciar todo el estado
+        st.session_state.nivel_actual = 1
+        st.session_state.piezas_encontradas_nivel1 = 0
+        st.session_state.piezas_encontradas_nivel2 = 0
+        st.session_state.piezas_encontradas_nivel3 = 0
+        st.session_state.nivel1_completado = False
+        st.session_state.nivel2_completado = False
+        st.session_state.nivel3_completado = False
+        st.session_state.orden_piezas_nivel1 = list(range(9))
+        st.session_state.orden_piezas_nivel2 = list(range(9))
+        st.session_state.orden_piezas_nivel3 = list(range(9))
+        random.shuffle(st.session_state.orden_piezas_nivel1)
+        random.shuffle(st.session_state.orden_piezas_nivel2)
+        random.shuffle(st.session_state.orden_piezas_nivel3)
+        st.session_state.piezas_correctas_nivel1 = [False] * 9
+        st.session_state.piezas_correctas_nivel2 = [False] * 9
+        st.session_state.piezas_correctas_nivel3 = [False] * 9
+        st.rerun()
+
+st.markdown("---")
+st.caption("*🧩 Cada pieza es un recuerdo, cada recuerdo es parte de nuestro amor.*")
