@@ -7,9 +7,9 @@ st.title("💖 ¡Feliz Primer Aniversario, Victoria! 💖")
 st.markdown("*Hoy celebramos 365 días de amor, risas y aprendizaje juntos. Donde hemos aprendido día a día a ser mejores personas, pareja, seres humanos. Hemos aprendido amarnos de la manera que nos llena, comunicarnos en nuestro lenguaje de muecas, y sobretodas las cosas seguir adelante superando cualquier obstáculo*")
 st.markdown("**¡Tengo innumerables razones para amarte churri!**")
 
-fecha_inicio = date(2025, 3, 3)
+fecha_inicio = date(2025, 2, 14)  # Fecha de inicio de la relación
 dias_juntos = (date.today() - fecha_inicio).days
-st.metric("📅 Días desde nuestra primera cita", dias_juntos)
+st.metric("📅 Días desde que me robaste un beso en faces", dias_juntos)
 
 # Foto de portada
 try:

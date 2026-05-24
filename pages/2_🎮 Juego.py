@@ -62,7 +62,7 @@ st.markdown("""
 st.markdown("""
 <div class="game-header">
     <h1>🎮 El Gran Juego de Nuestro Primer Año</h1>
-    <p>✨ Responde estas preguntas y demuestra que me conoces… ¡o tendrás que pagar con un helado! ✨</p>
+    <p>✨ Responde estas preguntas y demuestra que tanto conoces de nuestra relación… ¡o tendrás que pagar con un helado! ✨</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -78,46 +78,46 @@ if "puntuacion" not in st.session_state:
 # Banco de preguntas
 preguntas = [
     {
-        "pregunta": "¿Dónde fue nuestra primera cita?",
-        "opciones": ["🍔 Migas (Caracas)", "🏊‍♀️ En la piscina", "🎬 En el cine", "🏠 En mi casa"],
-        "respuesta": "🍔 Migas (Caracas)",
-        "pista": "🍔 Había hamburguesas crispy de por medio y mucha nervia."
+        "pregunta": "¿Dónde fue nuestra primera cita? (pregunta fácil, no te hagas la loca)",
+        "opciones": ["🍔 Migas", "🏊‍♀️ En la piscina", "🎬 En feria de faces", "🏠 En tu casa"],
+        "respuesta": "🍔 Migas",
+        "pista": "Yo pensé que no necesitarías una pista para esta... pero bueno, tu sabes que me gusta la avalancha de kfc."
     },
     {
-        "pregunta": "¿Qué comimos esa noche?",
+        "pregunta": "¿Qué comimos ese día? (esta es leve)",
         "opciones": ["🍔 Hamburguesas de pollo crispy", "🌭 Perros calientes", "🍣 Sushi", "🍕 Pizza"],
         "respuesta": "🍔 Hamburguesas de pollo crispy",
-        "pista": "🍗 Crujientes, deliciosas y compartimos papas."
+        "pista": "Los helados de mcdonals también me gustan, pero ese día no los pedimos."
     },
     {
-        "pregunta": "¿Cuál fue la primera canción que sonó en nuestro primer beso?",
-        "opciones": ["🎵 Qué bonito - Bad Bunny", "🎵 El himno nacional", "🎵 Una canción de cuna", "🎵 Estábamos en silencio"],
-        "respuesta": "🎵 Qué bonito - Bad Bunny",
-        "pista": "🎤 El conejo malo y romántico sonaba de fondo."
+        "pregunta": "¿Con que me amenazó mamimi la primera vez? (tuve miedo por un momento, lo admito)",
+    "opciones": ["Que te regresará temprano", "Que le comprará un helado", "Que te cuidara", "Que no te besaría ese día"],
+        "respuesta": "Que te cuidara",
+        "pista": "Su mirada de asesina no me inspiraba confianza, pero al final resultó ser la mejor mamimi."
     },
     {
         "pregunta": "¿Cuántos helados crees que hemos compartido (aproximadamente)?",
-        "opciones": ["🍦 Menos de 5", "🍦 Entre 15 y 30", "🍦 Más de 50 (somos unos viciosos)", "🍦 No llevamos la cuenta"],
-        "respuesta": "🍦 Más de 50 (somos unos viciosos)",
-        "pista": "🍨 Tú eres team chocolate con menta, yo team cookies."
+        "opciones": ["🍦 Menos de 5", "🍦 Entre 15 y 30", "🍦 Más de 50"],
+        "respuesta": "🍦 Entre 15 y 30",
+        "pista": "La verdad no llevamos la cuenta, pero si sumamos los que hemos comido en casa, los que me has dado, los que hemos compartido en la calle... seguro ya superamos los 10."
     },
     {
-        "pregunta": "¿Cuál es mi apodo secreto para ti cuando te pones cariñosa?",
-        "opciones": ["🐻 Mi osita", "💃 Mi chama loca", "❤️ Mi vida", "👑 Mi reina"],
-        "respuesta": "💃 Mi chama loca",
-        "pista": "🤪 Tiene que ver con tu personalidad alborotada y venezolana."
+        "pregunta": "¿Cuál es el primer apodo para ti que te dije?",
+        "opciones": ["🐻 Princesa", "💃 Churri", "❤️ Gorda", "👑 Chimichurri"],
+        "respuesta": "💃 Churri",
+        "pista": "Yo ni me acuerdo, tira a pegar porque tuve que buscar en el chat."
     },
     {
-        "pregunta": "¿Qué día fue nuestra primera cita?",
-        "opciones": ["📅 14 de febrero", "📅 3 de marzo", "📅 20 de marzo", "📅 10 de junio"],
+        "pregunta": "¿Qué día fue nuestra primera cita? (no te debes acordar y yo tampoco me acordaba, pero es una pregunta clásica de este tipo de juegos)",
+        "opciones": ["📅 28 de febrero", "📅 3 de marzo", "📅 8 de marzo", "📅 1 de abril"],
         "respuesta": "📅 3 de marzo",
-        "pista": "🗓️ Un día después del carnaval, el 3/3."
+        "pista": "🗓️ No me pidas ayuda, no recuerdas que se me olvida todo."
     },
     {
-        "pregunta": "¿Cuál es nuestro lugar favorito para arrunchar?",
-        "opciones": ["🛋️ El sofá de tu casa", "🛏️ Mi cama", "🎬 El cine", "🌳 El parque"],
-        "respuesta": "🛋️ El sofá de tu casa",
-        "pista": "🛋️ Donde vemos series hasta que el sueño nos vence."
+        "pregunta": "¿Cual es mi mayor vicio?",
+        "opciones": ["El café", "Los parleys", "Tus besos", "Tu agua"],
+        "respuesta": "Tus besos",
+        "pista": "Yo te amo mucho y a veces estoy cansado, sin embargo al levantarme necesito cafe pero apostando salimos a comer, sinceramente te la puse jodida. te amo."
     }
 ]
 
@@ -166,7 +166,7 @@ if st.session_state.pregunta_actual < total and not st.session_state.juego_termi
         if st.button("✅ RESPONDER", use_container_width=True, type="primary"):
             if respuesta_usuario == p["respuesta"]:
                 st.session_state.puntuacion += 1
-                st.session_state.feedback = "🎉 ¡CORRECTA! Eres la mejor conocedora de mí. ¡Te ganaste un beso! 🎉"
+                st.session_state.feedback = "🎉 ¡CORRECTA! Eres la mejor. ¡Te ganaste un beso y un Helado! 🎉"
                 st.session_state.feedback_tipo = "correcto"
                 st.balloons()
             else:
@@ -203,14 +203,14 @@ else:
         st.markdown("""
         <div style="background: linear-gradient(135deg, #3D2C2C, #2C1E1E); border-radius: 20px; padding: 2rem; text-align: center; margin: 1rem 0;">
             <h2 style="color: #FFB6C1;">🌟 ¡CASI PERFECTA! 🌟</h2>
-            <p>Fallaste muy pocas. Te invito un helado igual. ¡Te quiero mucho!</p>
+            <p>Fallaste muy pocas. Te invito un helado igual. ¡Te amo mucho!</p>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div style="background: linear-gradient(135deg, #3D2C2C, #2C1E1E); border-radius: 20px; padding: 2rem; text-align: center; margin: 1rem 0;">
             <h2 style="color: #FFB6C1;">😘 ¡NO PASA NADA! 😘</h2>
-            <p>Aún nos quedan muchos años para que me conozcas mejor. ¡Te quiero igual, mi chama loca!</p>
+            <p>Aún nos quedan muchos años para que me conozcas mejor. ¡Te amo igual, mi chama loca!</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -238,7 +238,7 @@ if st.session_state.puntuacion == total and total > 0:
 elif st.session_state.puntuacion >= total - 2 and total > 0:
     st.sidebar.info("🌟 ¡Vas excelente! 🌟")
 elif st.session_state.pregunta_actual > 0:
-    st.sidebar.info("💪 ¡Sigue así, campeona! 💪")
+    st.sidebar.info("💪 ¡Coño churri! 💪")
 
 st.sidebar.markdown("---")
 st.sidebar.caption("💡 **Tip:** Si no sabes una respuesta, usa la pista.")

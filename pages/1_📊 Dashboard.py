@@ -113,8 +113,8 @@ else:
                       color="Hormona", text_auto=True)
     st.plotly_chart(fig_bio2, use_container_width=True)
 
-    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Ene", "Feb", "Mar", "Abr", "May"]
-    felicidad = [30, 40, 42, 45, 50, 63, 75, 78, 79, 81, 82, 85, 88, 90, 92, 94, 97]
+    meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+    felicidad = [30, 40, 42, 45, 50, 63, 75, 78, 79, 81, 82, 95]
     df_evo = pd.DataFrame({"Mes": meses, "Índice de felicidad (unidades biológicas)": felicidad})
     fig_bio3 = px.line(df_evo, x="Mes", y="Índice de felicidad (unidades biológicas)",
                        title="📈 Evolución de nuestros sentimientos",
