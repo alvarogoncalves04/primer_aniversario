@@ -341,7 +341,7 @@ if st.session_state.horoscopo_mostrado and st.session_state.horoscopo_actual:
 st.divider()
 
 # ========== 7. SINTONÍA DE NUESTRO AMOR ==========
-# ========== 7. SINTONÍA DE NUESTRO AMOR ==========
+
 st.subheader("🎵 La sintonía de nuestro amor")
 
 st.markdown("""
