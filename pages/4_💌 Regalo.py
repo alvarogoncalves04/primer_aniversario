@@ -92,23 +92,23 @@ if "carta_abierta" not in st.session_state:
 contenido_carta = """Mi vida,
 
 Hoy, al mirar hacia atrás y ver todo lo que hemos caminado juntos, no puedo evitar sonreír como un niño. 
-Un año parece mucho y nada a la vez. Mucho porque en estos 365 días hemos llenado cada rincón de recuerdos inolvidables: 
-las hamburguesas crispy en Migas, las tardes de helado en el parque, las series que vimos abrazados hasta que el sueño nos venció.
-Nada porque contigo el tiempo vuela, y siento que fue ayer cuando te vi por primera vez y supe que algo especial iba a pasar.
+Un año parece mucho y nada a la vez. Mucho porque en estos 365 días hemos llenado cada rincón de recuerdos inolvidables, y nada porque siento que el tiempo ha volado cuando estoy contigo.
+Sin embargo estoy tan feliz de haber compartido este año a tu lado, de haber aprendido a amarte, a entenderte, a reír contigo y a ser tu compañero en esta aventura que es la vida. 
+Y conseguir la pareja que tanto anhelaba.
 
 Eres la persona que le dio color a mis estadísticas, la que convirtió mis gráficos de barras en latidos, 
-la que me enseñó que la biología del amor se escribe con mayúsculas. 
-Gracias por cada abrazo, cada risa, cada discusión tonta que terminó en un beso. 
+la que me enseñó que la biología del amor se escribe con mayúsculas y tildes. 
+Gracias por cada abrazo, cada risa, cada discusión que terminó en un beso. 
 Gracias por ser mi calma en el caos y mi aventura en la rutina.
 
 Este es solo el primer capítulo de una historia que apenas empieza. 
 Te prometo seguir llenando páginas de momentos felices, de viajes, de helados compartidos, 
 de conversaciones hasta tarde y de silencios cómplices.
 
-Feliz primer aniversario, mi chama loca. Te amo más de lo que las palabras pueden escribir.
+Feliz primer aniversario, mi chinita hermosa. Te amo más de lo que las palabras pueden escribir.
 
 Con cariño infinito,
-Tu pana del alma 💖"""
+Alvaro"""
 
 def generar_imagen_carta(contenido):
     """Genera una imagen PNG de la carta con diseño elegante"""

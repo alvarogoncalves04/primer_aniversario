@@ -103,7 +103,7 @@ preguntas = [
     },
     {
         "pregunta": "¿Cuál es el primer apodo para ti que te dije?",
-        "opciones": ["🐻 Princesa", "💃 Churri", "❤️ Gorda", "👑 Chimichurri"],
+        "opciones": ["🐻 Princesa", "💃 Churri", "❤️ Gorda", "👑 Chinita"],
         "respuesta": "💃 Churri",
         "pista": "Yo ni me acuerdo, tira a pegar porque tuve que buscar en el chat."
     },
