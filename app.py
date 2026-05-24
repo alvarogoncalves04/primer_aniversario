@@ -2,6 +2,36 @@ import streamlit as st
 from datetime import date
 
 st.set_page_config(page_title="Primer Aniversario", page_icon="💖")
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #1E1A1A;
+    }
+    body, .stMarkdown, .stText, .stTitle, .stSubheader, 
+    .stHeader, .stCaption, .stMetric, .stAlert, div, p, span, label {
+        color: #FFFFFF !important;
+    }
+    .stButton button {
+        background-color: #6E1A2F !important;
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+    }
+    .stButton button:hover {
+        background-color: #8B2A45 !important;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #2C2626 !important;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #FFFFFF !important;
+    }
+    .st-emotion-cache-1v0mbdj:first-child {
+        display: none !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 st.title("💖 ¡Feliz Primer Aniversario, Victoria! 💖")
 st.markdown("*Hoy celebramos 365 días de amor, risas y aprendizaje juntos. Donde hemos aprendido día a día a ser mejores personas, pareja, seres humanos. Hemos aprendido amarnos de la manera que nos llena, comunicarnos en nuestro lenguaje de muecas, y sobretodas las cosas seguir adelante superando cualquier obstáculo*")
